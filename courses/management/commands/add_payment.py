@@ -18,7 +18,7 @@ class Command(BaseCommand):
             Payments(
                 user=User.objects.get(pk=3),
                 date='2023-10-01',
-                lesson=Lesson.objects.get(pk=3),
+                lesson=Course.objects.get(pk=3),
                 summ_of_fee=3000,
                 way_of_pay='cash'
             )
