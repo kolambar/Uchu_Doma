@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from rest_framework.permissions import IsAuthenticated
 
 
 class IsStaffOrOwner(permissions.BasePermission):
@@ -16,3 +17,10 @@ class IsOwner(permissions.BasePermission):
 
         # Проверяем, является ли пользователь владельцем курса
         return obj.owner == request.user
+
+
+class IsAuthenticatedNoStaff(permissions.BasePermission):
+    def has_permission(self, request, view):
+        # Проверяем, является ли пользователь сотрудником (is_staff)
+        return bool(request.user and request.user.is_authenticated and not request.user.is_staff)
+
