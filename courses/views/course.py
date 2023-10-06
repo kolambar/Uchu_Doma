@@ -2,7 +2,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
 from courses.models import Course
-from courses.permissions import IsStaffOrOwner, IsOwner
+from courses.permissions import IsStaffOrOwner, IsOwner, IsAuthenticatedNoStaff
 from courses.serializers.course import CourseSerializer
 
 
@@ -21,7 +21,7 @@ class CourseViewSet(ModelViewSet):
         elif self.action in ['destroy']:
             permission_classes = [IsOwner]
         else:
-            permission_classes = [IsAuthenticated]
+            permission_classes = [IsAuthenticatedNoStaff]
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):

@@ -1,7 +1,7 @@
 from rest_framework.generics import RetrieveAPIView, DestroyAPIView, ListAPIView, UpdateAPIView, CreateAPIView
 
 from courses.models import Lesson
-from courses.permissions import IsStaffOrOwner, IsOwner
+from courses.permissions import IsStaffOrOwner, IsOwner, IsAuthenticatedNoStaff
 from courses.serializers.lesson import LessonSerializer
 
 
@@ -27,6 +27,7 @@ class LessonListView(ListAPIView):
 class LessonCreateView(CreateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+    permission_classes = [IsAuthenticatedNoStaff]
 
     def perform_create(self, serializer):
         new_lesson = serializer.save()
