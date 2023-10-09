@@ -1,6 +1,7 @@
 from rest_framework.generics import RetrieveAPIView, DestroyAPIView, ListAPIView, UpdateAPIView, CreateAPIView
 
 from courses.models import Lesson
+from courses.pagination import EducationalPagination
 from courses.permissions import IsStaffOrOwner, IsOwner, IsAuthenticatedNoStaff
 from courses.serializers.lesson import LessonSerializer
 
@@ -14,13 +15,16 @@ class LessonDetailView(RetrieveAPIView):
 class LessonListView(ListAPIView):
     serializer_class = LessonSerializer
     permission_classes = [IsStaffOrOwner]
+    pagination_class = EducationalPagination
 
     def get_queryset(self):
         user = self.request.user
         if user.id:
             if user.is_staff:
+                print(Lesson.objects.all())
                 return Lesson.objects.all()
             else:
+                print(Lesson.objects.filter(owner=user))
                 return Lesson.objects.filter(owner=user)
 
 
