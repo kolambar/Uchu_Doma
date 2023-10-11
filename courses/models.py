@@ -30,7 +30,6 @@ class Lesson(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, default=None)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
-
     def __str__(self):
         return f'{self.title}'
 
@@ -52,3 +51,15 @@ class Payments(models.Model):
 
     summ_of_fee = models.IntegerField(verbose_name='урок')
     way_of_pay = models.CharField(max_length=16, verbose_name='способ оплаты', choices=PAY_WAY)
+
+
+class Subscribe(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='пользователь', null=True)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='курс', null=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'course'],
+                                    name='unique_subscribe',
+                                    ),
+        ]
