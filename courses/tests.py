@@ -46,13 +46,13 @@ class LessonTestCase(APITestCase):
         self.assertEqual(
                     response.json(),
             {
-                        "id": 1,
+                        "id": self.lesson.pk,
                         "title": "test lesson",
                         "preview": None,
                         "description": "description",
                         "video_url": None,
-                        "course": 1,
-                        "owner": 1
+                        "course": self.course.pk,
+                        "owner": self.user.pk
                     }
                 )
 
@@ -61,24 +61,16 @@ class LessonTestCase(APITestCase):
         data = {
                     "title": "test update lesson",
                     "description": "update",
+                    "video_url": 'https://www.youtube.com/watch?v=O4irXQhgMqg',
                     "course": self.course.pk,
                     "owner": self.user.pk
         }
-
-        # data = {
-        #             "id": 1,
-        #             "title": "test update lesson",
-        #             "description": "update",
-        #             "video_url": None,
-        #             "course": 1,
-        #             "owner": 1
-        # }
 
         response = self.client.put(
             reverse('courses:update', kwargs={'pk': self.lesson.pk}),
             data=data
         )
-        print(response.json())
+
         self.assertEqual(
             response.status_code,
             status.HTTP_200_OK
@@ -87,33 +79,24 @@ class LessonTestCase(APITestCase):
         self.assertEqual(
                     response.json(),
             {
-                        "id": 1,
+                        "id": self.lesson.pk,
                         "title": "test update lesson",
                         "preview": None,
                         "description": "update",
-                        "video_url": None,
-                        "course": 1,
-                        "owner": 1
+                        "video_url": 'https://www.youtube.com/watch?v=O4irXQhgMqg',
+                        "course": self.course.pk,
+                        "owner": self.user.pk
                     }
                 )
-
-    def test_delete(self):
-
-        response = self.client.delete(
-            reverse('courses:delete', kwargs={'pk': self.lesson.pk})
-        )
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_204_NO_CONTENT
-        )
 
     def test_create_lesson(self):
 
         data = {
                     "title": 'test 2',
                     "description": 'description',
-                    "course": self.course,
-                    "owner": self.user,
+                    "video_url": 'https://www.youtube.com/watch?v=SiAuAJBZuGs',
+                    "course": self.course.pk,
+                    "owner": self.user.pk,
         }
 
         response = self.client.post(
@@ -128,10 +111,11 @@ class LessonTestCase(APITestCase):
 
         self.assertEqual(
             Lesson.objects.all().count(),
-            1
+            2
         )
 
-    def test_create_subscribe(self):
+
+    def test_create_delete_sub(self):
 
         data = {
                     "user": self.user.pk,
@@ -153,20 +137,23 @@ class LessonTestCase(APITestCase):
             1
         )
 
-    def test_delete_sub(self):
-
-        data = {
-                    "user": self.user.pk,
-                    "course": self.course.pk,
-        }
-
-        response = self.client.post(
-            reverse('courses:sub_create', kwargs={'pk': self.lesson.pk}),
-            data=data
-        )
-
         response = self.client.delete(
             reverse('courses:sub_delete', kwargs={'pk': self.lesson.pk})
+        )
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_204_NO_CONTENT
+        )
+
+        self.assertEqual(
+            Subscribe.objects.all().count(),
+            0
+        )
+
+    def test_delete(self):
+
+        response = self.client.delete(
+            reverse('courses:delete', kwargs={'pk': self.lesson.pk})
         )
         self.assertEqual(
             response.status_code,
