@@ -51,5 +51,3 @@ class SubscribeCreateView(CreateAPIView):
 class SubscribeDeleteView(DestroyAPIView):
     queryset = Subscribe.objects.all()
     serializer_class = SubscribeSerializer
-
-
