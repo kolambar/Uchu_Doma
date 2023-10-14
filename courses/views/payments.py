@@ -1,5 +1,8 @@
 import stripe
+from rest_framework.decorators import api_view
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.response import Response
+
 from courses.serializers.payments import PaymentsSerializer
 from courses.services import get_payment, is_paid
 from rest_framework.generics import ListAPIView
@@ -19,33 +22,41 @@ class PaymentsListView(ListAPIView):
     ordering_fields = ['date']
 
 
+@api_view(['GET'])
 def page_with_pay_link(request, course_id, amount):
 
     course = Course.objects.get(pk=course_id)
 
-    link = get_payment(course, amount)
-    print(link)
-    return HttpResponse(request, link)
+    session = get_payment(course, amount)
+    link = session.url
+
+    Payments.objects.create(
+        user=request.user,
+        date=datetime.datetime.now().date(),
+        course=course,
+        summ_of_fee=session.amount_total,
+        way_of_pay='bank_transfer',
+        session_id=session.id,
+        is_paid=False
+    )
+
+    return Response({"payment_link": link})
 
 
+@api_view(['GET'])
 def check_pay(request, course_pk):
 
     course = Course.objects.get(pk=course_pk)
+    payment = Payments.objects.get(course=course, user=request.user)
+
     session = stripe.checkout.Session.retrieve(
-        str(course_pk),
-    )  # client_reference_id сессии был взят из pk курса
-
-    user_email = session.customer_details['email']
-
-    user = User.objects.get(email=user_email)
+        payment.session_id,
+    )
 
     if is_paid(session):
-        Payments.objects.create(
-            user=user,
-            data=datetime.data.now(),
-            course=course,
-            summ_of_fee=session.amount_total,
-            way_of_pay='bank_transfer'
-        )
+        payment.is_paid = True
+        payment.save()
 
-    return HttpResponse(request)
+        return Response({"status": "paid"})
+
+    return Response({"status": "Error of payment. Please call for support"})

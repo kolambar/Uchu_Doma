@@ -11,7 +11,7 @@ def get_payment(course, amount):
     )
 
     session = stripe.checkout.Session.create(
-      client_reference_id=course.pk,
+      # client_reference_id=course.pk,
       success_url=f"http://127.0.0.1:8000/lesson/check_pay/{course.pk}",
       line_items=[
         {
@@ -22,10 +22,7 @@ def get_payment(course, amount):
       mode="payment",
     )
 
-    link = session.url
-
-    session.success_url += session.id
-    return link
+    return session
 
 
 def is_paid(session):
