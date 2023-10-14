@@ -8,9 +8,9 @@ from courses.models import Payments, Lesson, Course
 
 @admin.register(Payments)
 class PaymentsAdmin(admin.ModelAdmin):
-    list_display = ('user', 'date', 'course', 'lesson', 'summ_of_fee', 'way_of_pay',)
-    list_filter = ('way_of_pay',)
-    search_fields = ('user', 'date', 'summ_of_fee',)
+    list_display = ('user', 'date', 'course', 'summ_of_fee', 'way_of_pay', 'session_id', 'is_paid', )
+    list_filter = ('way_of_pay', 'session_id', 'is_paid', )
+    search_fields = ('user', 'date', 'summ_of_fee', 'session_id', 'is_paid', )
 
 
 @admin.register(Lesson)

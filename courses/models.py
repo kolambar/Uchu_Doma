@@ -49,8 +49,13 @@ class Payments(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, **NULLABLE, verbose_name='курс')
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, **NULLABLE, verbose_name='урок')
 
-    summ_of_fee = models.IntegerField(verbose_name='урок')
+    summ_of_fee = models.IntegerField(verbose_name='цена')
     way_of_pay = models.CharField(max_length=16, verbose_name='способ оплаты', choices=PAY_WAY)
+    session_id = models.CharField(max_length=80, verbose_name='id сессии')
+    is_paid = models.BooleanField(verbose_name='поступил ли платеж')
+
+    class Meta:
+        unique_together=('course', 'user')
 
 
 class Subscribe(models.Model):
