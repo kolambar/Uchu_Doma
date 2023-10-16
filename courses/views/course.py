@@ -6,6 +6,7 @@ from courses.models import Course, Subscribe
 from courses.pagination import EducationalPagination
 from courses.permissions import IsStaffOrOwner, IsOwner, IsAuthenticatedNoStaff
 from courses.serializers.course import CourseSerializer, SubscribeSerializer
+from courses.tasks import report_an_update
 
 
 class CourseViewSet(ModelViewSet):
@@ -34,6 +35,12 @@ class CourseViewSet(ModelViewSet):
                 return Course.objects.all()
             else:
                 return Course.objects.filter(owner=user)
+
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+        instance = self.get_object()
+        report_an_update.delay(instance)
+        return response
 
 
 class SubscribeCreateView(CreateAPIView):
