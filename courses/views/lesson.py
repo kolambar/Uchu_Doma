@@ -6,6 +6,7 @@ from courses.permissions import IsStaffOrOwner, IsOwner, IsAuthenticatedNoStaff
 from courses.serializers.lesson import LessonSerializer
 
 
+
 class LessonDetailView(RetrieveAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
@@ -21,10 +22,8 @@ class LessonListView(ListAPIView):
         user = self.request.user
         if user.id:
             if user.is_staff:
-                print(Lesson.objects.all())
                 return Lesson.objects.all()
             else:
-                print(Lesson.objects.filter(owner=user))
                 return Lesson.objects.filter(owner=user)
 
 
