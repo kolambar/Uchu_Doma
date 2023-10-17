@@ -173,6 +173,13 @@ CELERY_TASK_TRACK_STARTED = True
 # Максимальное время на выполнение задачи
 CELERY_TASK_TIME_LIMIT = 30 * 60
 
+CELERY_BEAT_SCHEDULE = {
+    'check_is_active': {
+        'task': 'courses.tasks.check_is_active',
+        'schedule': timedelta(days=1),
+    },
+}
+
 
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
