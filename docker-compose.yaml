@@ -11,14 +11,20 @@ services:
       - pg_data:/var/lib/postgresql/data/pgdata
     ports:
       - '5432:5432'
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -U postgres' ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
 
   app:
     build: .
-    command: python manage.py migrate && python manage.py runserver 0.0.0.0:8000
-    environment:
-      - DATABASE_URL=postgres://postgres:mysecretpassword@db/uchu_doma
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     ports:
       - '8001:8000'
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   pg_data:
